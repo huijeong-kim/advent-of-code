@@ -1,9 +1,10 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Formatter;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Lines};
+use std::io::{BufRead, BufReader};
 
 // FAILED: 99749
+// FAILED: 99987
 
 #[derive(Debug)]
 enum Node {
@@ -50,14 +51,14 @@ impl std::fmt::Display for Node {
             Node::Directory(dir) => {
                 write!(
                     f,
-                    "DIR, {}, {}, {}, {}",
+                    "DIR, name:{}, size:{}, id:{}, parent:{}",
                     dir.name, dir.size, dir.id, dir.parent
                 )
             }
             Node::File(file) => {
                 write!(
                     f,
-                    "FILE, {}, {}, {}, {}",
+                    "FILE, name:{}, size:{}, id:{}, parent:{}",
                     file.name, file.size, file.id, file.parent
                 )
             }
@@ -101,11 +102,17 @@ struct FileNode {
 #[derive(Debug, Default)]
 struct NodeList {
     node: HashMap<u32, Node>,
+    num_files: i32,
+    num_dirs: i32,
 }
 
 impl NodeList {
     fn insert_new_node(&mut self, node: Node) {
         println!("New node added, {}", node);
+        match &node {
+            Node::Directory(_) => self.num_dirs += 1,
+            Node::File(_) => self.num_files += 1,
+        };
         self.node.insert(node.get_id(), node);
     }
 
@@ -120,11 +127,11 @@ impl NodeList {
     fn print(&self, id: u32, depth: usize) {
         let node = self.node.get(&id).unwrap();
 
-        let indent = std::iter::repeat("  ").take(depth).collect::<String>();
-        println!("{}, {}", indent, node);
-
         match node {
             Node::Directory(dir) => {
+                let indent = std::iter::repeat("  ").take(depth).collect::<String>();
+                println!("{}, {}", indent, node);
+
                 for n in &dir.list {
                     self.print(*n, depth + 1);
                 }
@@ -133,6 +140,13 @@ impl NodeList {
                 // do nothing
             }
         }
+    }
+
+    fn total_nodes(&self) {
+        println!(
+            "Total nodes, dir:{}, files:{}",
+            self.num_dirs, self.num_files
+        );
     }
 }
 
@@ -149,20 +163,55 @@ impl IdAllocator {
     }
 }
 
+fn test_input() -> Vec<String> {
+    let input = r"$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k";
+    input.lines().map(|l| l.to_string()).collect()
+}
 fn main() {
-    let (root_node_id, nodes) = get_root_node();
+    let lines = get_day7_input();
+    //let lines = test_input();
+
+    let (root_node_id, nodes) = assess_the_situation_and_return_root_node(lines);
     nodes.print(root_node_id, 0);
+    nodes.total_nodes();
     println!();
 
     let target_num = 100000;
+    //my_first_try(root_node_id, &nodes, target_num);
+    my_second_try(root_node_id, &nodes, target_num);
+}
 
+fn my_first_try(root_node_id: u32, nodes: &NodeList, target_num: u64) {
+    // target_num 이하의 sums 를 모두 찾은 뒤 이 중 max 구함 => 결과 = 99749
+    // 문제점: greedy 하게 찾아서는 max를 찾을 수 없다! (5+4 < 5+3+2)
     let sizes = get_dir_sizes(root_node_id, &nodes);
     let mut sizes: Vec<u64> = sizes
         .into_iter()
         .filter(|n| *n <= target_num && *n != 0)
         .collect();
     sizes.sort_by(|a, b| b.cmp(a));
-
     println!("Directory sizes: {:?}", sizes);
     println!();
 
@@ -183,6 +232,39 @@ fn main() {
     println!("sum: {}", sums.iter().max().unwrap());
 }
 
+fn my_second_try(root_node_id: u32, nodes: &NodeList, target_num: u64) {
+    // 모든 합을 다 찾은 뒤 이 중 max 구함 => 결과 = 99987
+    // 문제점: 더한 값이 같은 경우를 구분할 수 없다...! (10 + 10 = 20 이 되는 최대치를 찾을 수 없다)
+    let sizes = get_dir_sizes(root_node_id, &nodes);
+    let mut sizes: Vec<u64> = sizes
+        .into_iter()
+        .filter(|n| *n <= target_num && *n != 0)
+        .collect();
+    sizes.sort_by(|a, b| b.cmp(a));
+
+    println!("Directory sizes: {:?}", sizes);
+    println!();
+
+    let mut last_sums: HashSet<u64> = sizes.into_iter().collect();
+    for _ in 0..last_sums.len() - 1 {
+        let mut sums = HashSet::new();
+        for current in &last_sums {
+            let mut sum = current.clone();
+            for num in &last_sums {
+                if sum + num <= target_num {
+                    sum += num;
+                }
+                sums.insert(sum);
+            }
+        }
+
+        last_sums = last_sums.union(&sums).cloned().collect();
+    }
+
+    println!("sums: {:?}", last_sums);
+    println!("sum: {}", last_sums.iter().max().unwrap());
+}
+
 fn get_dir_sizes(node_id: u32, nodes: &NodeList) -> Vec<u64> {
     let mut sizes = Vec::new();
 
@@ -197,9 +279,10 @@ fn get_dir_sizes(node_id: u32, nodes: &NodeList) -> Vec<u64> {
     return sizes;
 }
 
-fn get_day7_input() -> Lines<BufReader<File>> {
+fn get_day7_input() -> Vec<String> {
     let file = File::open("inputs/day7.txt").unwrap();
-    BufReader::new(file).lines()
+    let lines = BufReader::new(file).lines();
+    lines.map(|s| s.unwrap()).collect()
 }
 
 fn create_root_node(id: u32) -> Node {
@@ -212,9 +295,7 @@ fn create_root_node(id: u32) -> Node {
     })
 }
 
-fn get_root_node() -> (u32, NodeList) {
-    let lines = get_day7_input();
-
+fn assess_the_situation_and_return_root_node(lines: Vec<String>) -> (u32, NodeList) {
     let mut nodes = NodeList::default();
     let mut id_allocator = IdAllocator::new();
 
@@ -226,8 +307,8 @@ fn get_root_node() -> (u32, NodeList) {
     let mut waiting_for_output = false;
 
     for line in lines {
-        let line = line.unwrap();
         if line.starts_with("$") {
+            // command executed
             waiting_for_output = false;
 
             let args: Vec<&str> = line.split_whitespace().collect();
@@ -252,6 +333,7 @@ fn get_root_node() -> (u32, NodeList) {
                 panic!("Received invalid command {}", line);
             }
         } else {
+            // ls result
             assert!(waiting_for_output);
 
             let args: Vec<&str> = line.split_whitespace().collect();
