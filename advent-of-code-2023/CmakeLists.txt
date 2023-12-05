@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.27.7)
+
+project(AdventOfCode2023)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+file(GLOB SRCS src-cpp/*.cpp)
+
+foreach(SRC ${SRCS})
+    get_filename_component(EXEC_NAME ${SRC} NAME_WE)
+
+    add_executable(${EXEC_NAME} ${SRC})
+    set_target_properties(${EXEC_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
+    )
+
+    add_custom_target(run_${EXEC_NAME} COMMAND ./${EXEC_NAME})
+    list(APPEND EXEC_NAMES ${EXEC_NAME})
+endforeach()
+
+add_custom_target(build_all
+    DEPENDS ${EXEC_NAMES}
+    COMMENT "Building all executables"
+)
