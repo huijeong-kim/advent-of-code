@@ -19,7 +19,7 @@ Distance:  9  40  200";
 }
 
 fn day6_input() -> Vec<String> {
-    let file = File::open("inputs/day6.txt").unwrap();
+    let file = File::open("inputs/day06.txt").unwrap();
     let reader = BufReader::new(file);
     reader.lines().map(|l| l.unwrap()).collect()
 }

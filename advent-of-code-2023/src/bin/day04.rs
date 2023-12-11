@@ -16,7 +16,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
 }
 
 fn day4_input() -> Vec<String> {
-    let file = File::open("inputs/day4.txt").unwrap();
+    let file = File::open("inputs/day04.txt").unwrap();
     let lines = BufReader::new(file).lines();
     lines.into_iter().map(|line| line.unwrap()).collect()
 }

@@ -41,7 +41,7 @@ humidity-to-location map:
 }
 
 fn day5_input() -> Vec<String> {
-    let file = File::open("inputs/day5.txt").unwrap();
+    let file = File::open("inputs/day05.txt").unwrap();
     let reader = BufReader::new(file);
     reader.lines().map(|l| l.unwrap()).collect()
 }

@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 fn day9_input() -> Vec<String> {
-    let file = File::open("inputs/day9.txt").unwrap();
+    let file = File::open("inputs/day09.txt").unwrap();
     let buf_reader = BufReader::new(file);
     buf_reader.lines().map(|line| line.unwrap()).collect()
 }

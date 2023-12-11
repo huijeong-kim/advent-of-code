@@ -20,7 +20,7 @@ fn test_input() -> Vec<String> {
 }
 
 fn day3_input() -> Vec<String> {
-    let file = File::open("inputs/day3.txt").unwrap();
+    let file = File::open("inputs/day03.txt").unwrap();
     let lines = BufReader::new(file).lines();
     lines.into_iter().map(|line| line.unwrap()).collect()
 }

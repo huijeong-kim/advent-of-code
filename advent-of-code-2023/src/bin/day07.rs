@@ -186,7 +186,7 @@ fn to_hand_type_with_joker(cards: &str) -> HandType {
 }
 
 fn day7_input() -> Vec<String> {
-    let file = File::open("inputs/day7.txt").unwrap();
+    let file = File::open("inputs/day07.txt").unwrap();
     let buf_reader = BufReader::new(file);
     buf_reader.lines().map(|l| l.unwrap()).collect()
 }

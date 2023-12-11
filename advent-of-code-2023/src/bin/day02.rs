@@ -47,7 +47,7 @@ impl Cubes {
 }
 
 fn main() {
-    let file = File::open("inputs/day2.txt").unwrap();
+    let file = File::open("inputs/day02.txt").unwrap();
     let lines = BufReader::new(file).lines();
     let lines: Vec<String> = lines.into_iter().map(|line| line.unwrap()).collect();
 
