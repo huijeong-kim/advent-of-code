@@ -1,9 +1,9 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+pub fn solution(input: String) {
+    let result = part1(&input);
+    println!("part: {}", result);
 
-fn day11_input() -> Vec<String> {
-    let file = File::open("inputs/day11.txt").unwrap();
-    BufReader::new(file).lines().map(|l| l.unwrap()).collect()
+    let result = part2(&input, 1000000);
+    println!("part2: {}", result);
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -76,12 +76,12 @@ impl Map {
     }
 }
 
-fn parse_input(input: &Vec<String>) -> Map {
+fn parse_input(input: &str) -> Map {
     let rows = input.len() as u64;
-    let cols = input[0].len() as u64;
+    let cols = input.lines().collect::<Vec<_>>()[0].len() as u64;
 
     let galaxies = input
-        .iter()
+        .lines()
         .enumerate()
         .map(|(row_idx, line)| {
             line.chars()
@@ -100,7 +100,7 @@ fn parse_input(input: &Vec<String>) -> Map {
     }
 }
 
-fn part1(input: &Vec<String>) -> u64 {
+fn part1(input: &str) -> u64 {
     let mut map = parse_input(&input);
     map.expand(2);
 
@@ -113,7 +113,7 @@ fn part1(input: &Vec<String>) -> u64 {
         .sum()
 }
 
-fn part2(input: &Vec<String>, mul: u64) -> u64 {
+fn part2(input: &str, mul: u64) -> u64 {
     let mut map = parse_input(&input);
     map.expand(mul);
 
@@ -125,21 +125,12 @@ fn part2(input: &Vec<String>, mul: u64) -> u64 {
         .iter()
         .sum()
 }
-fn main() {
-    let input = day11_input();
-    let result = part1(&input);
-    println!("result: {}", result);
-
-    let result = part2(&input, 1000000);
-    println!("result: {}", result);
-}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn test_input() -> Vec<String> {
-        let input = "...#......
+    const TEST_INPUT: &str = "...#......
 .......#..
 #.........
 ..........
@@ -150,13 +141,9 @@ mod tests {
 .......#..
 #...#.....";
 
-        input.lines().map(|line| line.to_string()).collect()
-    }
-
     #[test]
     fn test_expand() {
-        let input = test_input();
-        let mut map = parse_input(&input);
+        let mut map = parse_input(TEST_INPUT);
         assert_eq!(map.rows, 10);
         assert_eq!(map.cols, 10);
         assert_eq!(
@@ -195,31 +182,29 @@ mod tests {
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT);
         assert_eq!(result, 374);
     }
 
     #[test]
     fn test_part1() {
-        let input = day11_input();
+        let input = crate::read_from_file("inputs/day11.txt");
         let result = part1(&input);
         assert_eq!(result, 9684228);
     }
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let result = part2(&input, 10);
+        let result = part2(TEST_INPUT, 10);
         assert_eq!(result, 1030);
 
-        let result = part2(&input, 100);
+        let result = part2(TEST_INPUT, 100);
         assert_eq!(result, 8410);
     }
 
     #[test]
     fn test_part2() {
-        let input = day11_input();
+        let input = crate::read_from_file("inputs/day11.txt");
         let result = part2(&input, 1000000);
         assert_eq!(result, 483844716556);
     }

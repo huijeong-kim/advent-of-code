@@ -1,27 +1,11 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
-fn main() {
-    let input = day6_input();
-
+pub fn solution(input: String) {
     let result = part1(&input);
-    println!("result = {}", result);
+    println!("part1: {}", result);
 
     let result = part2(&input);
-    println!("result = {}", result);
-}
-
-fn test_input() -> Vec<String> {
-    let input = "Time:      7  15   30
-Distance:  9  40  200";
-    input.lines().map(|l| l.to_string()).collect()
-}
-
-fn day6_input() -> Vec<String> {
-    let file = File::open("inputs/day06.txt").unwrap();
-    let reader = BufReader::new(file);
-    reader.lines().map(|l| l.unwrap()).collect()
+    println!("part2: {}", result);
 }
 
 #[derive(Debug, PartialEq)]
@@ -52,10 +36,10 @@ impl Race {
     }
 }
 
-fn get_part1_races(lines: &Vec<String>) -> Vec<Race> {
+fn get_part1_races(lines: &str) -> Vec<Race> {
     let mut races = Vec::new();
 
-    lines.iter().for_each(|l| {
+    lines.lines().for_each(|l| {
         let numbers: Vec<_> = l
             .split(" ")
             .filter(|&c| c != "" && c.chars().all(|c| c.is_numeric()))
@@ -74,7 +58,7 @@ fn get_part1_races(lines: &Vec<String>) -> Vec<Race> {
     races
 }
 
-fn part1(input: &Vec<String>) -> u64 {
+fn part1(input: &str) -> u64 {
     let mut races = get_part1_races(&input);
     get_result(&mut races)
 }
@@ -91,10 +75,10 @@ fn get_result(races: &mut Vec<Race>) -> u64 {
     result.iter().fold(1, |acc, &v| acc * v)
 }
 
-fn get_part2_races(lines: &Vec<String>) -> Vec<Race> {
+fn get_part2_races(lines: &str) -> Vec<Race> {
     let mut races = Vec::new();
 
-    lines.iter().for_each(|l| {
+    lines.lines().for_each(|l| {
         let numbers = l.split(":").collect::<Vec<_>>()[1];
         let numbers = numbers.trim().replace(" ", "");
         let number = numbers.parse::<u64>().unwrap();
@@ -109,7 +93,7 @@ fn get_part2_races(lines: &Vec<String>) -> Vec<Race> {
     races
 }
 
-fn part2(input: &Vec<String>) -> u64 {
+fn part2(input: &str) -> u64 {
     let mut races = get_part2_races(&input);
     // slow.. but can get the answer
     get_result(&mut races)
@@ -119,10 +103,12 @@ fn part2(input: &Vec<String>) -> u64 {
 mod tests {
     use super::*;
 
+    const TEST_INPUT: &str = "Time:      7  15   30
+Distance:  9  40  200";
+
     #[test]
     fn test_part1_parsing() {
-        let input = test_input();
-        let races = get_part1_races(&input);
+        let races = get_part1_races(TEST_INPUT);
 
         let expected = vec![
             Race {
@@ -146,8 +132,7 @@ mod tests {
 
     #[test]
     fn test_part2_parsing() {
-        let input = test_input();
-        let races = get_part2_races(&input);
+        let races = get_part2_races(TEST_INPUT);
 
         let expected = vec![Race {
             time: 71530,
@@ -178,15 +163,13 @@ mod tests {
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT);
         assert_eq!(result, 288);
     }
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let result = part2(&input);
+        let result = part2(TEST_INPUT);
         assert_eq!(result, 71503);
     }
 }

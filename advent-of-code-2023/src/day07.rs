@@ -1,8 +1,14 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+
+pub fn solution(input: String) {
+    let result = part1(&input);
+    println!("part1: {}", result);
+
+    let result = part2(&input);
+    println!("part2: {}", result);
+}
 
 #[derive(PartialEq, Debug, PartialOrd, Ord, Eq)]
 enum HandType {
@@ -185,24 +191,9 @@ fn to_hand_type_with_joker(cards: &str) -> HandType {
     };
 }
 
-fn day7_input() -> Vec<String> {
-    let file = File::open("inputs/day07.txt").unwrap();
-    let buf_reader = BufReader::new(file);
-    buf_reader.lines().map(|l| l.unwrap()).collect()
-}
-
-fn main() {
-    let input = day7_input();
-    let result = part1(&input);
-    println!("result: {}", result);
-
-    let result = part2(&input);
-    println!("result: {}", result);
-}
-
-fn part1(input: &Vec<String>) -> u64 {
+fn part1(input: &str) -> u64 {
     let mut hands: Vec<_> = input
-        .iter()
+        .lines()
         .map(|line| {
             let values: Vec<_> = line.split(" ").collect();
             assert_eq!(values.len(), 2);
@@ -229,9 +220,9 @@ fn part1(input: &Vec<String>) -> u64 {
     result
 }
 
-fn part2(input: &Vec<String>) -> u64 {
+fn part2(input: &str) -> u64 {
     let mut hands: Vec<_> = input
-        .iter()
+        .lines()
         .map(|line| {
             let values: Vec<_> = line.split(" ").collect();
             assert_eq!(values.len(), 2);
@@ -261,14 +252,11 @@ fn part2(input: &Vec<String>) -> u64 {
 mod tests {
     use super::*;
 
-    fn test_input() -> Vec<String> {
-        let input = "32T3K 765
+    const TEST_INPUT: &str = "32T3K 765
 T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483";
-        input.lines().map(|l| l.to_string()).collect()
-    }
 
     #[test]
     fn test_find_hand_type() {
@@ -313,15 +301,14 @@ QQQJA 483";
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT);
 
         assert_eq!(result, 6440);
     }
 
     #[test]
     fn test_part1() {
-        let input = day7_input();
+        let input = crate::read_from_file("inputs/day07.txt");
         let result = part1(&input);
 
         assert_eq!(result, 241344943);
@@ -329,15 +316,14 @@ QQQJA 483";
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let result = part2(&input);
+        let result = part2(TEST_INPUT);
 
         assert_eq!(result, 5905);
     }
 
     #[test]
     fn test_part2() {
-        let input = day7_input();
+        let input = crate::read_from_file("inputs/day07.txt");
         let result = part2(&input);
 
         assert_eq!(result, 243101568);

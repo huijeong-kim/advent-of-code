@@ -1,49 +1,13 @@
 use std::fmt::{Debug, Formatter};
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
-#[allow(dead_code)]
-fn test_input() -> Vec<String> {
-    let str = "seeds: 79 14 55 13
+pub fn solution(input: String) {
+    let (seeds, maps) = get(&input);
 
-seed-to-soil map:
-50 98 2
-52 50 48
+    let result = part1(&seeds, &maps);
+    println!("part1: {}", result);
 
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
-
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
-
-water-to-light map:
-88 18 7
-18 25 70
-
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
-
-temperature-to-humidity map:
-0 69 1
-1 0 69
-
-humidity-to-location map:
-60 56 37
-56 93 4";
-    str.lines().map(|l| l.to_string()).collect()
-}
-
-fn day5_input() -> Vec<String> {
-    let file = File::open("inputs/day05.txt").unwrap();
-    let reader = BufReader::new(file);
-    reader.lines().map(|l| l.unwrap()).collect()
+    let result = part2(&seeds, &maps);
+    println!("part2: {:?}", result);
 }
 
 #[derive(Clone, PartialOrd, Ord, PartialEq, Eq)]
@@ -131,18 +95,18 @@ impl Map {
     }
 }
 
-fn get(input: &Vec<String>) -> (Vec<u128>, Vec<Map>) {
+fn get(input: &str) -> (Vec<u128>, Vec<Map>) {
     let (seeds, mut maps) = get_input(input);
     fill_up_maps(&mut maps);
 
     (seeds, maps)
 }
 
-fn get_input(input: &Vec<String>) -> (Vec<u128>, Vec<Map>) {
+fn get_input(input: &str) -> (Vec<u128>, Vec<Map>) {
     let mut seeds = Vec::new();
     let mut maps = Vec::new();
 
-    input.iter().for_each(|line| {
+    input.lines().for_each(|line| {
         if line.starts_with("seeds:") {
             let numbers = line.split(":").collect::<Vec<_>>()[1];
             seeds = numbers
@@ -210,19 +174,6 @@ fn fill_up_maps(maps: &mut Vec<Map>) {
 
         m.range_maps.sort();
     });
-}
-
-fn main() {
-    let input = day5_input();
-    let (seeds, maps) = get(&input);
-
-    // Part1
-    let result = part1(&seeds, &maps);
-    println!("result: {}", result);
-
-    // Part2
-    let result = part2(&seeds, &maps);
-    println!("result: {:?}", result);
 }
 
 fn find_location(seed: u128, maps: &Vec<Map>) -> u128 {
@@ -303,10 +254,43 @@ fn part2(seeds: &Vec<u128>, maps: &Vec<Map>) -> u128 {
 mod tests {
     use super::*;
 
+    const TEST_INPUT: &str = "seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4";
+
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let (seeds, mut maps) = get_input(&input);
+        let (seeds, mut maps) = get_input(TEST_INPUT);
         assert_eq!(seeds, vec![79, 14, 55, 13]);
         assert_eq!(maps.len(), 7);
         assert_eq!(
@@ -356,7 +340,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = day5_input();
+        let input = crate::read_from_file("inputs/day05.txt");
         let (seeds, maps) = get(&input);
         let result = part1(&seeds, &maps);
         assert_eq!(result, 165788812);
@@ -364,15 +348,14 @@ mod tests {
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let (seeds, maps) = get(&input);
+        let (seeds, maps) = get(TEST_INPUT);
         let result = part2(&seeds, &maps);
         assert_eq!(result, 46);
     }
 
     #[test]
     fn test_part2() {
-        let input = day5_input();
+        let input = crate::read_from_file("inputs/day05.txt");
         let (seeds, maps) = get(&input);
         let result = part2(&seeds, &maps);
         assert_eq!(result, 1928058);

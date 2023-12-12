@@ -1,9 +1,14 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
 const MAX_RED_CUBES: u32 = 12;
 const MAX_GREEN_CUBES: u32 = 13;
 const MAX_BLUE_CUBES: u32 = 14;
+
+pub fn solution(input: String) {
+    let result = part1(&input);
+    println!("part1: {}", result);
+
+    let result = part2(&input);
+    println!("part2: {}", result);
+}
 
 // input:  2, blue
 fn to_cube_counts(count_str: &str) -> (&str, u32) {
@@ -46,23 +51,9 @@ impl Cubes {
     }
 }
 
-fn main() {
-    let file = File::open("inputs/day02.txt").unwrap();
-    let lines = BufReader::new(file).lines();
-    let lines: Vec<String> = lines.into_iter().map(|line| line.unwrap()).collect();
-
-    // Part 1
-    let result = part1(&lines);
-    println!("result: {}", result);
-
-    // Part 2
-    let result = part2(&lines);
-    println!("result: {}", result);
-}
-
-fn part1(lines: &Vec<String>) -> u32 {
-    let result: Vec<u32> = lines
-        .iter()
+fn part1(input: &String) -> u32 {
+    let result: Vec<u32> = input
+        .lines()
         .map(|l| {
             let split: Vec<&str> = l.split(':').collect();
             let game_id = split[0].split(' ').last().unwrap();
@@ -100,9 +91,9 @@ fn part1(lines: &Vec<String>) -> u32 {
     result.iter().sum()
 }
 
-fn part2(lines: &Vec<String>) -> u32 {
-    let result: Vec<u32> = lines
-        .iter()
+fn part2(input: &String) -> u32 {
+    let result: Vec<u32> = input
+        .lines()
         .map(|l| {
             let split: Vec<&str> = l.split(':').collect();
             let trials: Vec<_> = split[1].split(';').collect();

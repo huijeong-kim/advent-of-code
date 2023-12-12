@@ -1,13 +1,11 @@
 use std::fmt::{Debug, Formatter};
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
-fn day10_input() -> Vec<String> {
-    let file = File::open("inputs/day10.txt").unwrap();
-    BufReader::new(file)
-        .lines()
-        .map(|line| line.unwrap())
-        .collect()
+pub fn solution(input: String) {
+    let result = part1(&input);
+    println!("part1: {}", result);
+
+    //let result = part2(&input);
+    //println!("part2: {}", result);
 }
 
 #[derive(Clone)]
@@ -103,9 +101,9 @@ impl Map {
     }
 }
 
-fn parse_input(input: &Vec<String>) -> Map {
+fn parse_input(input: &str) -> Map {
     let nodes: Vec<Vec<_>> = input
-        .iter()
+        .lines()
         .enumerate()
         .map(move |(row_idx, line)| {
             line.chars()
@@ -156,7 +154,7 @@ fn parse_input(input: &Vec<String>) -> Map {
 
     Map {
         rows: input.len() as i64,
-        cols: input[0].len() as i64,
+        cols: input.lines().collect::<Vec<_>>()[0].len() as i64,
         start: start.loc.clone(),
         nodes,
     }
@@ -193,7 +191,7 @@ fn update_steps(cur: Location, map: &Map, steps: &mut Vec<Vec<i64>>) {
     }
 }
 
-fn part1(input: &Vec<String>) -> u64 {
+fn part1(input: &str) -> u64 {
     let mut map = parse_input(input);
     map.replace_start();
 
@@ -218,7 +216,7 @@ fn find_rectangle(start_node: &Location, map: &Map) -> Option<Rectangle> {
     todo!()
 }
 
-fn part2(input: &Vec<String>) -> u64 {
+fn part2(input: &str) -> u64 {
     let mut map = parse_input(input);
     map.replace_start();
 
@@ -238,36 +236,26 @@ fn part2(input: &Vec<String>) -> u64 {
         .iter()
         .map(|node| find_rectangle(node, &map))
         .collect::<Vec<_>>()
+        .iter()
         .filter(|rec| rec.is_some())
-        .map(|rec| rec.unwrap())
+        .map(|rec| rec.as_ref().unwrap())
         .collect::<Vec<_>>();
-    todo!()
-}
 
-fn main() {
-    let input = day10_input();
-    let result = part1(&input);
-    println!("result: {}", result);
-
-    let result = part2(&input);
-    println!("result: {}", result);
+    //TODO
+    0
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn part1_test_input() -> Vec<String> {
-        let input = ".....
+    const PART1_TEST_INPUT: &str = ".....
 .S-7.
 .|.|.
 .L-J.
 .....";
-        input.lines().map(|line| line.to_string()).collect()
-    }
 
-    fn part2_test_input() -> Vec<String> {
-        let input = "...........
+    const PART2_TEST_INPUT: &str = "...........
 .S-------7.
 .|F-----7|.
 .||.....||.
@@ -277,28 +265,23 @@ mod tests {
 .L--J.L--J.
 ...........";
 
-        input.lines().map(|line| line.to_string()).collect()
-    }
-
     #[test]
     fn test_part1_with_test_input() {
-        let input = part1_test_input();
-        let result = part1(&input);
+        let result = part1(PART1_TEST_INPUT);
 
         assert_eq!(result, 4);
     }
 
     #[test]
     fn test_part1() {
-        let input = day10_input();
+        let input = crate::read_from_file("inputs/day10.txt");
         let result = part1(&input);
         assert_eq!(result, 6890);
     }
 
     #[test]
     fn test_part2() {
-        let input = part2_test_input();
-        let result = part2(&input);
+        let result = part2(PART2_TEST_INPUT);
         assert_eq!(result, 4);
     }
 }

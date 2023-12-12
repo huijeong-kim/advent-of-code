@@ -1,15 +1,13 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+pub fn solution(input: String) {
+    let result = part1(&input);
+    println!("result = {}", result);
 
-fn day9_input() -> Vec<String> {
-    let file = File::open("inputs/day09.txt").unwrap();
-    let buf_reader = BufReader::new(file);
-    buf_reader.lines().map(|line| line.unwrap()).collect()
+    let result = part2(&input);
+    println!("result = {}", result);
 }
-
-fn parses_input(input: &Vec<String>) -> Vec<Vec<i64>> {
+fn parses_input(input: &str) -> Vec<Vec<i64>> {
     input
-        .iter()
+        .lines()
         .map(|line| {
             line.split(' ')
                 .map(|number| number.parse::<i64>().unwrap())
@@ -49,7 +47,7 @@ fn predict_next(numbers: &Vec<i64>) -> i64 {
         .fold(0, |acc, val| acc + val.last().unwrap())
 }
 
-fn part1(input: &Vec<String>) -> i64 {
+fn part1(input: &str) -> i64 {
     let numbers = parses_input(&input);
 
     numbers
@@ -60,7 +58,7 @@ fn part1(input: &Vec<String>) -> i64 {
         .sum()
 }
 
-fn part2(input: &Vec<String>) -> i64 {
+fn part2(input: &str) -> i64 {
     let numbers = parses_input(&input);
 
     numbers
@@ -71,35 +69,19 @@ fn part2(input: &Vec<String>) -> i64 {
         .sum()
 }
 
-fn main() {
-    let input = day9_input();
-    let result = part1(&input);
-    println!("result = {}", result);
-
-    let result = part2(&input);
-    println!("result = {}", result);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn test_input() -> Vec<String> {
-        let input = "0 3 6 9 12 15
+    const TEST_INPUT: &str = "0 3 6 9 12 15
 1 3 6 10 15 21
 10 13 16 21 30 45";
-        input.lines().map(|line| line.to_string()).collect()
-    }
 
-    fn test_input_long() -> Vec<String> {
-        let input = "6 10 30 80 170 314 561 1060 2170 4641 9947 20986 43640 90222 186816 388245 807350 1670120 3415956 6874320 13566998";
-        vec![input.to_string()]
-    }
+    const TEST_INPUT_LONG: &str = "6 10 30 80 170 314 561 1060 2170 4641 9947 20986 43640 90222 186816 388245 807350 1670120 3415956 6874320 13566998";
 
     #[test]
     fn test_parse_input() {
-        let input = test_input();
-        let actual = parses_input(&input);
+        let actual = parses_input(TEST_INPUT);
 
         let expected: Vec<Vec<i64>> = vec![
             vec![0, 3, 6, 9, 12, 15],
@@ -136,15 +118,14 @@ mod tests {
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT);
 
         assert_eq!(result, 114);
     }
 
     #[test]
     fn test_part1() {
-        let input = day9_input();
+        let input = crate::read_from_file("inputs/day09.txt");
         let result = part1(&input);
 
         assert_eq!(result, 2043183816);
@@ -152,22 +133,20 @@ mod tests {
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let result = part2(&input);
+        let result = part2(TEST_INPUT);
 
         assert_eq!(result, 2);
     }
 
     #[test]
     fn test_with_target_input() {
-        let input = test_input_long();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT_LONG);
         println!("{}", result);
     }
 
     #[test]
     fn test_part2() {
-        let input = day9_input();
+        let input = crate::read_from_file("inputs/day09.txt");
         let result = part2(&input);
 
         assert_eq!(result, 1118);

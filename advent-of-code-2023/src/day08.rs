@@ -1,11 +1,13 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
-fn day8_input() -> Vec<String> {
-    let file = File::open("inputs/day08.txt").unwrap();
-    let buf_reader = BufReader::new(file);
-    buf_reader.lines().map(|line| line.unwrap()).collect()
+pub fn solution(input: String) {
+    let (instruction, maps) = parse_input(&input);
+
+    let result = part1(&instruction, &maps);
+    println!("part1: {:?}", result);
+
+    let result = part2(&instruction, &maps);
+    println!("part2: {:?}", result);
 }
 
 fn part1(instruction: &String, maps: &HashMap<String, Map>) -> u64 {
@@ -110,17 +112,6 @@ fn part2(instruction: &String, maps: &HashMap<String, Map>) -> u64 {
     path_results.iter().cloned().fold(1, num::integer::lcm)
 }
 
-fn main() {
-    let input = day8_input();
-    let (instruction, maps) = parse_input(&input);
-
-    let result = part1(&instruction, &maps);
-    println!("result: {:?}", result);
-
-    let result = part2(&instruction, &maps);
-    println!("result: {:?}", result);
-}
-
 #[derive(PartialEq, Debug)]
 struct Map {
     destination: String,
@@ -139,11 +130,11 @@ impl Map {
     }
 }
 
-fn parse_input(input: &Vec<String>) -> (String, HashMap<String, Map>) {
-    let instruction = input[0].clone();
+fn parse_input(input: &str) -> (String, HashMap<String, Map>) {
+    let instruction = input.lines().collect::<Vec<_>>()[0].to_string();
 
     let maps = input
-        .iter()
+        .lines()
         .map(|line| {
             let split = line.split("=").collect::<Vec<_>>();
             if split.len() == 2 {
@@ -177,8 +168,7 @@ fn parse_input(input: &Vec<String>) -> (String, HashMap<String, Map>) {
 mod tests {
     use super::*;
 
-    fn test_input() -> Vec<String> {
-        let input = "RL
+    const TEST_INPUT: &str = "RL
 
 AAA = (BBB, CCC)
 BBB = (DDD, EEE)
@@ -187,20 +177,14 @@ DDD = (DDD, DDD)
 EEE = (EEE, EEE)
 GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)";
-        input.lines().map(|l| l.to_string()).collect()
-    }
 
-    fn test_input2() -> Vec<String> {
-        let input = "LLR
+    const TEST_INPUT2: &str = "LLR
 
 AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)";
-        input.lines().map(|l| l.to_string()).collect()
-    }
 
-    fn test_input_part2() -> Vec<String> {
-        let input = "LR
+    const TEST_INPUT_PART2: &str = "LR
 
 11A = (11B, XXX)
 11B = (XXX, 11Z)
@@ -210,13 +194,10 @@ ZZZ = (ZZZ, ZZZ)";
 22C = (22Z, 22Z)
 22Z = (22B, 22B)
 XXX = (XXX, XXX)";
-        input.lines().map(|l| l.to_string()).collect()
-    }
 
     #[test]
     fn test_parsing_input() {
-        let input = test_input2();
-        let (instruction, maps) = parse_input(&input);
+        let (instruction, maps) = parse_input(TEST_INPUT2);
 
         assert_eq!(instruction, "LLR".to_string());
 
@@ -252,20 +233,18 @@ XXX = (XXX, XXX)";
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let (instruction, maps) = parse_input(&input);
+        let (instruction, maps) = parse_input(TEST_INPUT);
         let result = part1(&instruction, &maps);
         assert_eq!(result, 2);
 
-        let input = test_input2();
-        let (instruction, maps) = parse_input(&input);
+        let (instruction, maps) = parse_input(TEST_INPUT2);
         let result = part1(&instruction, &maps);
         assert_eq!(result, 6);
     }
 
     #[test]
     fn test_part1() {
-        let input = day8_input();
+        let input = crate::read_from_file("inputs/day08.txt");
         let (instruction, maps) = parse_input(&input);
         let result = part1(&instruction, &maps);
         assert_eq!(result, 15989);
@@ -273,15 +252,14 @@ XXX = (XXX, XXX)";
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input_part2();
-        let (instruction, maps) = parse_input(&input);
+        let (instruction, maps) = parse_input(TEST_INPUT_PART2);
         let result = part2(&instruction, &maps);
         assert_eq!(result, 6);
     }
 
     #[test]
     fn test_part2() {
-        let input = day8_input();
+        let input = crate::read_from_file("inputs/day08.txt");
         let (instruction, maps) = parse_input(&input);
         let result = part2(&instruction, &maps);
         assert_eq!(result, 13830919117339);

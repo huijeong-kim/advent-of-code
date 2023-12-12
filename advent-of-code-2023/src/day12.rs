@@ -1,18 +1,6 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
-fn day12_input() -> Vec<String> {
-    let file = File::open("inputs/day12.txt").unwrap();
-    BufReader::new(file)
-        .lines()
-        .map(|line| line.unwrap())
-        .collect()
-}
-
-fn main() {
-    let input = day12_input();
+pub fn solution(input: String) {
     let result = part1(&input);
-    println!("result: {}", result);
+    println!("part1: {}", result);
 }
 
 #[derive(PartialEq, Debug)]
@@ -70,9 +58,9 @@ fn matched(record: &str, info: &Vec<u64>) -> bool {
     values.iter().map(|val| val.num).collect::<Vec<_>>() == *info
 }
 
-fn part1(input: &Vec<String>) -> u64 {
+fn part1(input: &str) -> u64 {
     let counts = input
-        .iter()
+        .lines()
         .map(|line| {
             let split = line.split(" ").collect::<Vec<_>>();
             assert_eq!(split.len(), 2);
@@ -90,10 +78,10 @@ fn part1(input: &Vec<String>) -> u64 {
     counts.iter().sum()
 }
 
-fn part2(input: &Vec<String>) -> u64 {
+fn part2(input: &str) -> u64 {
     // to slow.. try using dynamic programming
     let counts = input
-        .iter()
+        .lines()
         .map(|line| {
             let split = line.split(" ").collect::<Vec<_>>();
             assert_eq!(split.len(), 2);
@@ -116,20 +104,16 @@ fn part2(input: &Vec<String>) -> u64 {
 mod tests {
     use super::*;
 
-    fn test_input() -> Vec<String> {
-        let input = "???.### 1,1,3
+    const TEST_INPUT: &str = "???.### 1,1,3
 .??..??...?##. 1,1,3
 ?#?#?#?#?#?#?#? 1,3,1,6
 ????.#...#... 4,1,1
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1";
-        input.lines().map(|line| line.to_string()).collect()
-    }
 
     #[test]
     fn test_part1_with_test_input() {
-        let input = test_input();
-        let result = part1(&input);
+        let result = part1(TEST_INPUT);
         assert_eq!(result, 21);
     }
 
@@ -137,7 +121,7 @@ mod tests {
     #[test]
     #[ignore]
     fn test_part1() {
-        let input = day12_input();
+        let input = crate::read_from_file("inputs/day12.txt");
         let result = part1(&input);
         assert_eq!(result, 7361);
     }
@@ -161,8 +145,7 @@ mod tests {
 
     #[test]
     fn test_part2_with_test_input() {
-        let input = test_input();
-        let result = part2(&input);
+        let result = part2(TEST_INPUT);
         assert_eq!(result, 525152);
     }
 }
