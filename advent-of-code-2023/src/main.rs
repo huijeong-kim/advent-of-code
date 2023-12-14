@@ -1,10 +1,10 @@
 use advent_of_code_2023::{
     day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13,
-    read_from_file,
+    day14, read_from_file,
 };
 use std::env;
 
-const MAX_DAY: i32 = 13;
+const MAX_DAY: i32 = 14;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -48,6 +48,7 @@ fn run(day_num: i32) {
         11 => day11::solution(input),
         12 => day12::solution(input),
         13 => day13::solution(input),
+        14 => day14::solution(input),
         _ => panic!("not yet solved"),
     };
 }

@@ -14,6 +14,7 @@ pub mod day10;
 pub mod day11;
 pub mod day12;
 pub mod day13;
+pub mod day14;
 
 pub fn read_from_file(filename: &str) -> String {
     let mut file = File::open(filename).unwrap();
