@@ -1,6 +1,6 @@
 use advent_of_code_2023::{
     day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13,
-    day14, day15, day16, read_from_file,
+    day14, day15, day16, day17, read_from_file,
 };
 use std::env;
 
@@ -51,6 +51,7 @@ fn run(day_num: i32) {
         14 => day14::solution(input),
         15 => day15::solution(input),
         16 => day16::solution(input),
+        17 => day17::solution(input),
         _ => panic!("not yet solved"),
     };
 }
