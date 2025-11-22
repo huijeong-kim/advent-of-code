@@ -1,5 +1,4 @@
 use advent_of_code_2024::read_from_file;
-use std::ops::Deref;
 
 const FREE: i32 = -1;
 

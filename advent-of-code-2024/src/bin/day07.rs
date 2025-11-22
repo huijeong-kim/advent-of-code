@@ -1,4 +1,3 @@
-use std::ptr::eq;
 use advent_of_code_2024::read_from_file;
 
 struct Equation {
